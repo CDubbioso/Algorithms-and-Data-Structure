@@ -213,3 +213,49 @@ price_matrix = [
 # print(bus_trip(price_matrix, 3))
 
 
+# ----------------------------------------------------------------------------------
+# ----------------------------------------------------------------------------------
+# Design a top-down dynamic programming algorithm which solves the (worst-case) problem in linear time. 
+# Note that for a unconnected (acyclic) graph any node can be the root. 
+# You may assume that the initial call to your function will be made with a  fixed root node. 
+def vertex_cover(G, root):
+    """
+    :param G: An adjacency list representation of a graph.
+    :type G: Dict[str, List[str]]
+    
+    :param root: The root of the (sub)tree
+    :type root: str
+
+    :return: The size of a minimal vertex cover.  
+    :rtype: int 
+    """
+    memo = {node: None for node in G.keys()} 
+
+    def bt(node, parent):
+        children = [n for n in G[node] if n != parent]
+
+        cover_in = 1
+        cover_out= 0
+
+        for child in children:
+            child_in, child_out = bt(child, node)   # recurse: get child's pair
+            cover_in += min(child_in, child_out)    # parent covers edge -> child free
+            cover_out += child_in                   # parent doesn't -> child forced in
+
+        return (cover_in, cover_out)
+
+    return min(bt(root, None))
+
+
+G = {
+    'A': ['B', 'C'],
+    'B': ['A'],
+    'C': ['A', 'D'],
+    'D': ['C', 'E', 'F'],
+    'E': ['D'],
+    'F': ['D', 'G'],
+    'G': ['F'],
+}
+root = 'A'
+print(vertex_cover(G, root))
+

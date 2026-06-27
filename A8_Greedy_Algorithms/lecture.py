@@ -162,3 +162,86 @@ graph = {
 # print(dijkstra('A', graph))
 
 
+def map_colouring_problem(adj_list, available_colours):
+    """
+    :param adj_list: An adjacency list representation of a graph.
+    :type adj_list: Dict[str, Set[str]]
+    
+    :param available_colours: Set of possible colours.
+    :type available_colours: Set[str]
+    
+    :return: An assignment, associating vertices to colours, 
+        or the boolean False, if no assignment is possible.
+    :rtype: Dict[str,str] or bool 
+    """
+    colours = list(available_colours)
+    visited = set()
+    solution = {node: None for node in adj_list.keys()}
+    # solution[(adj_list.keys())[0]] = colours[0]
+    # visited.add((adj_list.keys())[0])
+
+    while len(visited) < len(adj_list):
+        current_node = None
+        
+        # select node
+        for node in adj_list.keys():
+            if node not in visited:
+                current_node = node
+                break
+        
+        visited.add(current_node)
+
+        # select colour
+        found = False
+        for colour in colours:
+            for neighbour in adj_list[current_node]:
+                if colour == solution[neighbour]:
+                    break
+            else:
+                # possible colour
+                solution[current_node] = colour
+                found = True
+        if not found: return False
+            
+    return solution if found else False
+
+def check_assignment(graph, assignment):
+    """
+    :param graph: An adjacency list represention of a graph. 
+    :type graph: Dict[str, Set[str]]
+    
+    :param assignment: A dictionary representation of a graph colouring, 
+        with vertices as keys and colours as values.
+    :type assignment: Dict[str,str]
+    
+    :return: Whether or not the assignment is valid. 
+    :rtype: bool 
+    """
+    if not assignment:
+        return False
+    for node in graph.keys():               # for every node in the graph
+        for neighbour in graph[node]:       # check each neighbour
+            if assignment[neighbour] == assignment[node]:       # check if neighbours have the same colour as the node
+                return False
+    
+    # else if every neighbour have a different colour, return True
+    return True
+
+adj_list = {
+    'Ze': {'So', 'NB'},
+    'NB': {'Ze', 'Li', 'So', 'Ge'},
+    'So': {'Ze', 'NB', 'Ut', 'Ge', 'NH'},
+    'Li': {'NB', 'Ge'}, 
+    'Ut': {'So', 'NH', 'Ge', 'Fl'}, 
+    'Ge': {'Li', 'NB', 'So', 'Ut', 'Fl', 'Ov'}, 
+    'NH': {'So', 'Ut', 'Fl', 'Fr'}, 
+    'Fl': {'NH', 'Ut', 'Ge', 'Ov', 'Fr'}, 
+    'Ov': {'Ge', 'Fl', 'Fr', 'Dr'},
+    'Dr': {'Ov', 'Fr', 'Gr'}, 
+    'Fr': {'NH','Fl', 'Ov', 'Dr', 'Gr'},
+    'Gr': {'Fr', 'Dr'}
+}
+colours = {'re', 'gr', 'bl', 'ye'}
+print(map_colouring_problem(adj_list, colours))
+print(check_assignment(adj_list, map_colouring_problem(adj_list, colours)))
+
