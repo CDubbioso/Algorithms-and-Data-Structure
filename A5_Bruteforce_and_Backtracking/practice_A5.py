@@ -108,11 +108,14 @@ def word_search(grid: list[list[str]], word: str) -> bool:
     rows, cols = len(grid), len(grid[0])
     
     def dfs(r, c, index):
-        # impossible case, out of bounds
+        # Base case: impossible case, out of bounds
         if r < 0 or r >= rows or c < 0 or c >= cols:
             return False
-        # Base case: letter already visited or letter doesn't match 
-        if (r, c) in visited or grid[r][c] != word[index]:
+        # Base case: letter already visited 
+        if (r, c) in visited:
+            return False
+        # Base case: letter doesn't match
+        if grid[r][c] != word[index]:
             return False
         
         # is complete word found

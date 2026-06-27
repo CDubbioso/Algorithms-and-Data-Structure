@@ -1,3 +1,5 @@
+import numpy as np
+
 # ==============================================================================
 # Exercise 1 — Coin Change
 # ==============================================================================
@@ -15,32 +17,37 @@ def coin_change_bottom_up(coins, amount):
         coins = [2], amount = 3
         Impossible                     -> return -1
 
-    Bottom-up approach:
-        Build a dp array of size (amount + 1).
-        dp[i] = minimum coins to make amount i.
-        Recurrence: dp[i] = min(dp[i - c] + 1) for each coin c where c <= i.
-        Base case:  dp[0] = 0.
-        Fill dp[1] ... dp[amount] in order.
-
     :param coins: List of coin denominations (positive integers)
     :param amount: Target amount (non-negative integer)
     :return: Minimum number of coins, or -1 if impossible
     :rtype: int
     """
-    pass
+    storage = {}
 
+    for i in range(amount + 1):
+        if amount in storage:
+            return storage[amount], storage
+        if i == 0:
+            storage[i] = 0
+        else:
+            for c in coins:
+                if i - c in storage:
+                    if i not in storage:
+                        storage[i] = storage[i - c] + 1
+                    else:
+                        storage[i] = min(storage[i], storage[i - c] + 1)
 
-def coin_change_top_down(coins, amount, memo=None):
+    if amount in storage:
+        return storage[amount], storage
+                        
+    return -1, storage
+
+# print(coin_change_bottom_up([1, 5, 6, 9], 11))
+# print(coin_change_bottom_up([2], 3))
+
+def coin_change_top_down(coins, amount):
     """
     Same problem as coin_change_bottom_up — solve it with recursion + memoization.
-
-    Top-down approach:
-        Define a recursive function min_coins(remaining) that returns the
-        minimum coins to make up `remaining`.
-        Base case:  remaining == 0 -> return 0.
-        Recurrence: try every coin c where c <= remaining,
-                    return 1 + min(min_coins(remaining - c)) over all valid c.
-        Memoize results in a dict to avoid recomputation.
 
     :param coins: List of coin denominations (positive integers)
     :param amount: Target amount (non-negative integer)
@@ -48,8 +55,39 @@ def coin_change_top_down(coins, amount, memo=None):
     :return: Minimum number of coins, or -1 if impossible
     :rtype: int
     """
-    pass
+    solutions = {
+        0: 0
+    }
 
+    def dp(new_amount):
+        # Base case
+        if new_amount == 0:
+            return 0
+        if new_amount < 0:
+            return -1
+        
+        # check memoization 
+        if new_amount in solutions: 
+            return solutions[new_amount]      
+
+        # recursive case
+        for coin in coins:
+            result = dp(new_amount - coin)
+            if new_amount not in solutions:
+                if result != -1:
+                    solutions[new_amount] = result + 1
+                else:
+                    solutions[new_amount] = -1
+            else:
+                if result != -1:
+                    solutions[new_amount] = min(solutions[new_amount], result + 1)
+        
+        return solutions[new_amount]
+                
+    return dp(amount)
+
+# print(coin_change_top_down([1, 5, 6, 9], 11))
+# print(coin_change_top_down([2], 3))
 
 # ==============================================================================
 # Exercise 2 — Longest Increasing Subsequence
@@ -64,20 +102,22 @@ def lis_bottom_up(arr):
         arr = [10, 9, 2, 5, 3, 7, 101, 18]
         One LIS: [2, 3, 7, 18]  -> return 4
 
-    Bottom-up approach:
-        dp[i] = length of the LIS ending at index i.
-        Base case:  dp[i] = 1 for all i.
-        Recurrence: dp[i] = max(dp[j] + 1) for all j < i where arr[j] < arr[i].
-        Fill left to right; answer is max(dp).
-
     :param arr: List of integers
     :return: Length of the longest strictly increasing subsequence
     :rtype: int
     """
-    pass
+    storage = [1] * len(arr)  # store lenghts 
 
+    for i in range(len(arr)):
+        for j in range(0, i):
+            if arr[j] < arr[i]:
+                storage[i] = max(storage[i], storage[j] + 1)
+    
+    return max(storage)
+                
+# print(lis_bottom_up([10, 9, 2, 5, 3, 7, 101, 18]))
 
-def lis_top_down(arr, index=0, prev_val=float('-inf'), memo=None):
+def lis_top_down(arr, index=0, prev_val=float('-inf')):
     """
     Same problem as lis_bottom_up — solve it with recursion + memoization.
 
@@ -97,8 +137,29 @@ def lis_top_down(arr, index=0, prev_val=float('-inf'), memo=None):
     :return: Length of the longest strictly increasing subsequence
     :rtype: int
     """
-    pass
+    memo = {}  # (index, prev_val) -> length
 
+    def dp(index, prev_val):
+        # Base case
+        if index == len(arr):
+            return 0
+        
+        # check memoization 
+        if (index, prev_val) in memo:
+            return memo[(index, prev_val)]
+
+        # recursive case
+        skip = dp(index + 1, prev_val)
+        take = 0
+        if arr[index] > prev_val:
+            take = 1 + dp(index + 1, arr[index])
+        
+        memo[(index, prev_val)] = max(skip, take)
+        return memo[(index, prev_val)]
+    
+    return dp(index, prev_val)
+
+# print(lis_top_down([10, 9, 2, 5, 3, 7, 101, 18]))   
 
 # ==============================================================================
 # Exercise 3 — Grid Minimum Path

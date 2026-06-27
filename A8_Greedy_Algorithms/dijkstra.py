@@ -17,13 +17,14 @@ def dijkstra(start: str, adj_list: dict[str, list[tuple[str, int]]]) -> tuple[di
     distances = {node: float('inf') for node in adj_list}
     distances[start] = 0
     visited = set()
-    history = {}
+    history = {}        # 'K' : 'B'  ->  to reach K the best node to come from is 'B'
     history[start] = None
 
     while len(visited) < len(adj_list):
         current_node = None
         current_distance = float('inf')
 
+        # the next node we check is the one with smallest current distance 
         for node in adj_list:
             if node not in visited and distances[node] < current_distance:
                 current_node = node

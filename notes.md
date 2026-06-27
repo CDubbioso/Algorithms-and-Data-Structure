@@ -253,7 +253,7 @@ ties keep stable input order — `sort(reverse=True)` would reverse the whole tu
 
 ## 8. Dynamic Programming
 
-### Top-down (recursion + memo cache)
+### Top-down (recursion + memo)
 ```python
 def solve(state, memo):
     if state in memo:
