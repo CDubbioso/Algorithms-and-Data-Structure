@@ -49,7 +49,7 @@ def constraint(queens, col):
     return True
 
 # print(rec_nQueens(1), [0])  # [0]
-print(rec_nQueens(4, [1]))  # [1, 3, 0, 2]
+# print(rec_nQueens(4, [1]))  # [1, 3, 0, 2]
 # print(rec_nQueens(8, [1]))  # [0, 4, 7, 5, 2, 6, 1, 3]
 # print(rec_nQueens(2, [1]))  # None (no solution exists)
 # print(rec_nQueens(3, [1]))  # None (no solution exists)

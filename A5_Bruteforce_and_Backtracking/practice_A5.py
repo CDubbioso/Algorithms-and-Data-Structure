@@ -138,12 +138,43 @@ def word_search(grid: list[list[str]], word: str) -> bool:
     
     return False
 
-
 # word = "BASA"
 # grd = [["A","B","C","E"],
 #        ["S","F","C","S"],
 #        ["A","D","E","E"]]
 # print(word_search(grd, word))  # True
+
+
+
+# ------------------------------------------------------------------------------------------
+# ------------------------------------------------------------------------------------------
+
+
+
+def knapsack_exhaustive(weights, values, target):
+    lst = []
+
+    def bt(i, capacity, accumulated):
+        if i >= len(weights):
+            return 0
+        
+        skip = bt(i+1, capacity, accumulated)
+
+        take = 0
+        lst.append(values[i])
+        if capacity - weights[i] >= 0: 
+            capacity -= weights[i]
+            accumulated += weights[i]
+            take = values[i] + bt(i+1, capacity, accumulated)
+            
+
+        return max(skip, take)
+
+    return bt(0, target, 0)
+
+weight = [8, 3, 4, 5]
+value = [42, 14, 40, 27]
+# print(knapsack_exhaustive(weight, value, 12))
 
 
 def TSP_exhaustive(graph, route, total_distance):
@@ -176,31 +207,6 @@ def TSP_exhaustive(graph, route, total_distance):
     
     return best_distance, best_route
 
-def knapsack_exhaustive(weights, values, target):
-    lst = []
-
-    def bt(i, capacity, accumulated):
-        if i >= len(weights):
-            return 0
-        
-        skip = bt(i+1, capacity, accumulated)
-
-        take = 0
-        lst.append(values[i])
-        if capacity - weights[i] >= 0: 
-            capacity -= weights[i]
-            accumulated += weights[i]
-            take = values[i] + bt(i+1, capacity, accumulated)
-            
-
-        return max(skip, take)
-
-    return bt(0, target, 0)
-
-weight = [8, 3, 4, 5]
-value = [42, 14, 40, 27]
-print(knapsack_exhaustive(weight, value, 12))
-
 
 def hamiltonian_cycle(graph, start):
     def bt(s, p_partial):
@@ -229,6 +235,7 @@ graph = {
     'F': ['E', 'C', 'D']
 }
 # print(hamiltonian_cycle(graph, 'A'))
+
 
 def TSP_backtracking(graph, start):
     def bt(s, partial_path, partial_cost):
@@ -262,3 +269,70 @@ graph = {
     'D': {'A': 7, 'B': 3, 'C': 1},
 }
 # print(TSP_backtracking(graph, 'A'))
+
+
+
+def alphametic(w1, w2, w3, mapping, letters, digits):
+
+    def bt(index, mapping, used):
+        if index == len(letters): 
+            if check_mapping(w1, w2, w3, mapping, letters):
+                return mapping.copy()
+            else:
+                return None
+        
+        letter = letters[index]
+        for i in digits:
+            if i not in used:
+                
+                if (letter == w1[0] or letter == w2[0] or letter == w3[0]) and i == 0:
+                    continue
+                
+                mapping[letter] = i
+                used.add(i)
+                partial_mapping = bt(index+1, mapping, used)
+
+                if partial_mapping:
+                    return partial_mapping
+                
+                used.remove(i)
+                del mapping[letter]
+
+        return None
+    
+    return bt(0, mapping, set())
+
+def check_mapping(w1, w2, w3, mapping, letters):
+    
+    if len(letters) != len(mapping):
+        return None
+    
+    count_string_1 = 0
+    i = 0
+    for letter in w1[::-1]:
+        count_string_1 += (mapping[letter] * (10 ** i))
+        i += 1
+
+    count_string_2 = 0
+    i = 0
+    for letter in w2[::-1]:
+        count_string_2 += (mapping[letter] * (10 ** i))
+        i += 1
+
+    count_string_3 = 0
+    i = 0
+    for letter in w3[::-1]:
+        count_string_3 += (mapping[letter] * (10 ** i))
+        i += 1
+
+    if count_string_1 + count_string_2 == count_string_3:
+        return True
+    return False
+
+
+result = alphametic(
+  'SEND', 'MORE', 'MONEY', 
+  dict(), 
+  ['S', 'E', 'N', 'D', 'M', 'O', 'R', 'Y'], 
+  [0, 1, 2, 5, 6, 7, 8, 9])
+print(result)
