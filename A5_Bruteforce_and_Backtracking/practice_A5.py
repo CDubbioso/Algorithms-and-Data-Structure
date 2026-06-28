@@ -144,3 +144,121 @@ def word_search(grid: list[list[str]], word: str) -> bool:
 #        ["S","F","C","S"],
 #        ["A","D","E","E"]]
 # print(word_search(grd, word))  # True
+
+
+def TSP_exhaustive(graph, route, total_distance):
+
+    n = len(graph)
+    r = len(route)
+
+    # Base case
+    if r == n:
+        total_distance += graph[route[-1][0]]
+        route.append(route[0])
+        return total_distance, route
+    
+    best_route = None
+    best_distance = float('inf')
+    for i in range(n):
+        if i not in route:
+            current_distance = graph[-1][i]
+            total_distance += current_distance
+            route.append(i)
+
+            dist, tot_route = TSP_exhaustive(graph, route, total_distance)
+
+            if dist < best_distance:
+                best_distance = dist
+                best_route = tot_route
+            
+            total_distance -= current_distance
+            route.pop()
+    
+    return best_distance, best_route
+
+def knapsack_exhaustive(weights, values, target):
+    lst = []
+
+    def bt(i, capacity, accumulated):
+        if i >= len(weights):
+            return 0
+        
+        skip = bt(i+1, capacity, accumulated)
+
+        take = 0
+        lst.append(values[i])
+        if capacity - weights[i] >= 0: 
+            capacity -= weights[i]
+            accumulated += weights[i]
+            take = values[i] + bt(i+1, capacity, accumulated)
+            
+
+        return max(skip, take)
+
+    return bt(0, target, 0)
+
+weight = [8, 3, 4, 5]
+value = [42, 14, 40, 27]
+print(knapsack_exhaustive(weight, value, 12))
+
+
+def hamiltonian_cycle(graph, start):
+    def bt(s, p_partial):
+        if len(p_partial) == len(graph) and start in graph[p_partial[-1]]:
+            p_partial.append(start)
+            return p_partial
+        
+        for neigh in graph[s]:
+            if neigh not in p_partial:
+                p_partial.append(neigh)
+                solution = bt(neigh, p_partial)
+            
+                if solution:
+                    return solution
+                p_partial.pop()
+        return False
+
+    return bt(start, [start])
+
+graph = {
+    'A': ['B', 'C', 'E'],
+    'B': ['A', 'C', 'D'],
+    'C': ['A', 'B', 'E', 'F'],
+    'D': ['B', 'F'],    
+    'E': ['A', 'C', 'F'],
+    'F': ['E', 'C', 'D']
+}
+# print(hamiltonian_cycle(graph, 'A'))
+
+def TSP_backtracking(graph, start):
+    def bt(s, partial_path, partial_cost):
+        if len(partial_path)==len(graph) and start in graph[partial_path[-1]]:
+            return partial_path + [start], partial_cost + graph[partial_path[-1]][start]
+        
+        best_cost = float('inf')
+        best_path = None
+
+        for neighbour in graph[s]:
+            if neighbour not in partial_path:
+                partial_path.append(neighbour)
+                partial_cost += graph[s][neighbour]
+                path, cost = bt(neighbour, partial_path, partial_cost)
+
+                if cost < best_cost:
+                    best_path = path
+                    best_cost = cost
+
+                partial_cost -= graph[s][neighbour]
+                partial_path.pop()
+        
+        return best_path, best_cost
+
+    return bt(start, [start], 0)
+
+graph = {
+    'A': {'B': 2, 'C': 5, 'D': 7},
+    'B': {'A': 2, 'C': 8, 'D': 3},
+    'C': {'A': 5, 'B': 8, 'D': 1},
+    'D': {'A': 7, 'B': 3, 'C': 1},
+}
+# print(TSP_backtracking(graph, 'A'))
