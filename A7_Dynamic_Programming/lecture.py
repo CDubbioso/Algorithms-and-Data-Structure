@@ -18,9 +18,10 @@ def coin_row(coins):
     for i in range(1, len(coins)):
         F[i+1] = max((coins[i] + F[i-1]), F[i])
     
-    return F[len(coins)]
+    return F[len(coins)], F
 
-# print(coin_row([5, 1, 2, 10, 6, 2]))
+print(coin_row([5, 1, 2, 10, 6, 2]))
+print([0, 5] + [0] * (6 - 1))
 
 def fibonacci(n):
     """
@@ -257,5 +258,5 @@ G = {
     'G': ['F'],
 }
 root = 'A'
-print(vertex_cover(G, root))
+# print(vertex_cover(G, root))
 
