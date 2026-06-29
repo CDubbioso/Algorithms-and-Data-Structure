@@ -277,7 +277,7 @@ def alphametic(w1, w2, w3, mapping, letters, digits):
     def bt(index, mapping, used):
         if index == len(letters): 
             if check_mapping(w1, w2, w3, mapping, letters):
-                return mapping.copy()
+                return mapping
             else:
                 return None
         
